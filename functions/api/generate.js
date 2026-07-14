@@ -16,10 +16,15 @@ export async function onRequestGet(context) {
 export async function onRequestPost(context) {
   try {
     const input = await context.request.json();
-    const scenario = String(input.scenario || "").trim();
-    if (!scenario) return json({ error: "Missing scenario." }, 400);
+    const mode = String(input.mode || "visual").trim().toLowerCase();
+    const scenario = String(input.scenario || input.text || input.original_text || "").trim();
+    if (!scenario) return json({ error: "Missing input text." }, 400);
     const provider = chooseProvider(context.env, input.client_api, context.request.headers);
     if (!provider) return json({ error: "AI API is not configured." }, 501);
+    if (mode === "partner") {
+      const raw = provider.name === "openai" ? await callOpenAI(buildPartnerPrompt(input), provider) : await callDeepSeek(buildPartnerPrompt(input), provider);
+      return json(normalizePartner(safeParseJson(raw), provider, scenario));
+    }
     const prompt = buildPrompt(input);
     const raw = provider.name === "openai" ? await callOpenAI(prompt, provider) : await callDeepSeek(prompt, provider);
     const pkg = normalize(safeParseJson(raw), provider);
@@ -62,6 +67,25 @@ function buildPrompt(input) {
 规则：5-8个步骤；必须包含这些沟通卡：${REQUIRED_CARDS.join("、")}；不要诊断、不要解释行为原因、不要推断隐藏意图。`;
 }
 
+function buildPartnerPrompt(input) {
+  return `请把成人对孩子说的话改写成更短、更具体、低压力的中文表达。
+成人原话：${input.text || input.original_text || input.scenario}
+
+必须返回 JSON：
+{
+  "original": "成人原话",
+  "rewritten_steps": ["3到6个短句，每句只包含一个具体动作或一个明确选择"],
+  "guidance": ["2到4条改写原则"],
+  "safety_note": "安全提醒"
+}
+规则：
+- 只做语言复杂度降低，不做医疗建议、行为分析、诊断或意图推断。
+- 不要声称这样能治疗或纠正自闭症。
+- 不要加入惩罚、威胁、羞辱、强迫眼神接触、逼问原因等内容。
+- 优先去掉“赶紧、快点、不然、你怎么还不、表现好一点”等压力表达。
+- 输出应帮助沟通伙伴说得更清楚，而不是让孩子更听话。`;
+}
+
 async function callOpenAI(prompt, provider) {
   const response = await fetch("https://api.openai.com/v1/responses", {
     method: "POST",
@@ -90,6 +114,19 @@ function safeParseJson(text) {
     if (!match) throw new Error("Model output was not JSON.");
     return JSON.parse(match[0]);
   }
+}
+
+function normalizePartner(pkg, provider, original) {
+  const steps = Array.isArray(pkg.rewritten_steps) ? pkg.rewritten_steps : [];
+  return {
+    provider: provider.name,
+    source: provider.source,
+    mode: "partner",
+    original: pkg.original || original,
+    rewritten_steps: steps.slice(0, 6),
+    guidance: Array.isArray(pkg.guidance) ? pkg.guidance.slice(0, 4) : ["一次只说一个步骤。", "用具体动作代替抽象要求。"],
+    safety_note: pkg.safety_note || "这是沟通材料草稿，不是医疗或治疗建议，需要成人和专业人员确认后使用。"
+  };
 }
 
 function normalize(pkg, provider) {
