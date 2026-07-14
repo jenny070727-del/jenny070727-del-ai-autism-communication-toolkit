@@ -1,25 +1,89 @@
-# AI Autism Communication Support Toolkit
+# AI 自闭症沟通支持工具包
 
-Concept prototype v0.2: an AI-assisted toolkit that helps adults create draft communication support materials based on established methods.
+Concept prototype v0.2.1
 
-Current modules:
+这个项目的第一阶段不是发明新的自闭症干预方案，而是把已有较成熟的沟通支持方法转化为低门槛、可快速生成的 AI 工具草稿。
 
-1. Visual Support Generator
-2. AAC Communication Card Generator
-3. Communication Partner Language Simplifier
+它不是诊断、治疗或临床决策工具，也不解释儿童行为原因、不推断隐藏意图、不替儿童自动回复。
 
-This is not a diagnostic, therapeutic, or clinical tool. It does not infer hidden intention, explain behavior causes, or replace professional judgment.
+## 当前产品结构
 
-## Deployment
+### 模块 1：视觉流程支持
 
-Use Cloudflare Pages. The project includes:
+解决问题：孩子如何提前理解“接下来会发生什么”。
+
+对应成熟方法：
+
+- 视觉日程表 Visual Schedule
+- First-Then / 先后图
+- 社交叙事 Social Narrative
+
+输出内容：
+
+- 视觉日程表
+- First-Then 图
+- 简短社交叙事
+- 成人展示建议
+- 建议搭配的表达卡名称
+
+### 模块 2：表达卡系统
+
+解决问题：孩子如何表达需要、拒绝、没懂、选择和澄清。
+
+对应成熟方法：
+
+- AAC / 图片沟通
+- 核心词 Core Vocabulary
+- 场景词 Fringe Vocabulary
+- 功能性沟通 Functional Communication
+
+输出内容：
+
+- 固定核心卡
+- 当前场景卡
+- 功能表达卡
+- 卡片使用提醒
+
+### 模块 3：沟通伙伴支持
+
+解决问题：成人如何说得更清楚，并示范如何使用表达卡。
+
+对应成熟方法：
+
+- 沟通伙伴训练 Communication Partner Training
+- 成人语言简化
+- Aided Language Modeling / 辅助语言示范
+- 等待与确认 Wait + Confirm
+
+输出内容：
+
+- 低压力短句
+- Aided Language Modeling 示范脚本
+- 等待与确认提醒
+
+## 部署
+
+当前使用 Cloudflare Pages。
+
+项目包含：
 
 - `index.html`
 - `functions/api/generate.js`
 
-The website supports two API modes:
+网站支持两种 API 模式：
 
-- Cloudflare environment variables;
-- temporary browser key for personal testing.
+- Cloudflare 环境变量；
+- 浏览器临时 API Key，仅用于个人测试。
 
-Never commit API keys to GitHub.
+不要把 API Key 提交到 GitHub。
+
+## 安全边界
+
+- 不诊断；
+- 不治疗；
+- 不声称改善症状；
+- 不解释行为原因；
+- 不推断隐藏意图；
+- 不根据哭闹、沉默、眼神等判断真实想法；
+- 不替儿童自动回复；
+- 所有输出都只是草稿，需要成人和专业人员确认。

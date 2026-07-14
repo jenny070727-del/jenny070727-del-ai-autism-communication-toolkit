@@ -1,21 +1,47 @@
 # Roadmap
 
-## v0.2
+## v0.2.1：清晰三模块结构
 
-Safe three-module prototype:
+目标：把成熟沟通支持方法融入现有三块，而不是继续增加混乱的新模块。
 
-- Visual Support Generator
-- AAC Communication Card Generator
-- Communication Partner Language Simplifier
+### 模块 1：视觉流程支持
 
-## v0.3
+- 视觉日程表
+- First-Then / 先后图
+- 社交叙事
+- 成人展示建议
 
-Add real AI generation for AAC cards.
+### 模块 2：表达卡系统
 
-## v0.4
+- 核心词卡
+- 当前场景卡
+- 功能表达卡
+- 使用提醒
 
-Add real AI generation for adult language simplification.
+### 模块 3：沟通伙伴支持
 
-## Not a product feature yet
+- 成人语言简化
+- Aided Language Modeling 示范脚本
+- 等待与确认提醒
 
-Communication event review remains internal observation material only, not an AI-facing feature.
+## v0.3：真实场景测试
+
+- 用夏令营观察到的真实场景测试输出是否有用。
+- 记录哪些输出需要专业人员修改。
+- 区分哪些场景适合视觉支持，哪些场景更需要表达卡或成人语言简化。
+
+## v0.4：更像工具，而不是页面 Demo
+
+- 支持保存多个场景。
+- 支持复制单个模块输出。
+- 支持打印或导出 PDF。
+- 支持更清楚的“核心卡 / 场景卡 / 功能卡”布局。
+
+## 暂不做
+
+- 诊断；
+- 治疗建议；
+- 情绪识别；
+- 行为原因解释；
+- 事件复盘 AI；
+- 自动替儿童回复。

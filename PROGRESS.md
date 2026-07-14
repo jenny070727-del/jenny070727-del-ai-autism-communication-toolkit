@@ -2,14 +2,32 @@
 
 Last updated: 2026-07-14
 
-Rebuilt v0.2 prototype after local deployment-folder cleanup issue.
+## 当前状态
 
-Current status:
+已从“模板展示型原型”调整为“输入驱动型三模块原型”。
 
-- Visual Support Generator UI works.
-- AAC Communication Card local examples work.
-- Communication Partner Language Simplifier local examples work.
-- Temporary browser API key mode added.
-- Cloudflare Pages Function added at `/api/generate`.
+三个模块现在的分工更清楚：
 
-Next step: push files to GitHub `main`, then Cloudflare Pages will redeploy automatically.
+1. 视觉流程支持：视觉日程表 + First-Then + 社交叙事。
+2. 表达卡系统：核心卡 + 场景卡 + 功能表达卡。
+3. 沟通伙伴支持：成人语言简化 + Aided Language Modeling 示范脚本。
+
+## 已完成
+
+- 顶部 API 连接入口已加入。
+- 支持 DeepSeek / OpenAI 临时 Key。
+- Cloudflare Pages Function 位于 `/api/generate`。
+- 模块 1 已改为视觉流程支持，不再和模块 2 重复生成完整 AAC 卡组。
+- 模块 2 已改为表达卡系统，区分核心卡、场景卡和功能表达卡。
+- 模块 3 已加入 Aided Language Modeling 示范脚本。
+- 本地 `file://` 预览时有兜底规则；部署后可走 API。
+
+## 下一步
+
+- Push 到 GitHub `main`。
+- 等 Cloudflare Pages 自动重新部署。
+- 在部署网址上测试三种 mode：
+  - `visual`
+  - `aac`
+  - `partner`
+- 根据夏令营观察继续调整场景输入和输出格式。

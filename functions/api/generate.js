@@ -2,7 +2,7 @@ const SYSTEM_PROMPT = `
 You help adults create preliminary visual support materials for autistic children.
 You are not a clinician, therapist, or diagnostic tool.
 Do not diagnose, treat, infer hidden intention, explain behavior causes, or claim treatment effects.
-Create clear, simple, low-pressure support materials based on established practices: visual schedules, step-by-step routines, social stories, AAC-inspired communication cards, and communication partner guidance.
+Create clear, simple, low-pressure support materials based on established practices: visual schedules, First-Then supports, social narratives, AAC/core vocabulary, functional communication, aided language modeling, and communication partner guidance.
 Always preserve autonomy: include help, break, stop, no, I don't understand, please say it again, too loud, and you misunderstood me.
 Return only valid JSON.`;
 
@@ -52,7 +52,7 @@ function chooseProvider(env, clientApi, headers) {
 }
 
 function buildPrompt(input) {
-  return `请根据以下场景生成中文视觉支持包。
+  return `请根据以下场景生成中文视觉流程支持材料。
 场景：${input.scenario}
 儿童沟通情况：${input.communication_context || "不确定"}
 目标：${input.goal || "提前解释接下来会发生什么"}
@@ -63,28 +63,35 @@ function buildPrompt(input) {
   "title": "短标题",
   "summary": "一句成人说明",
   "visual_schedule": [{"step":1,"title":"步骤标题","child_sentence":"儿童可读短句","icon_suggestion":"emoji","adult_note":"成人提示"}],
+  "first_then": {"first":"先做什么","then":"后做什么"},
   "social_story": ["5到7句简单中文"],
-  "communication_cards": [{"label":"卡片文字","purpose":"用途","icon_suggestion":"emoji"}],
+  "card_suggestions": ["建议搭配模块2的表达卡名称"],
   "adult_guidance": ["3到6条成人提示"],
   "safety_note": "安全提醒"
 }
-规则：5-8个步骤；必须包含这些沟通卡：${REQUIRED_CARDS.join("、")}；不要诊断、不要解释行为原因、不要推断隐藏意图。`;
+规则：5-8个视觉步骤；模块1只负责视觉日程表、First-Then和社交叙事，不直接生成完整AAC卡组；card_suggestions只列出建议去模块2搭配的表达卡名称；不要诊断、不要解释行为原因、不要推断隐藏意图。`;
 }
 
 function buildAACPrompt(input) {
-  return `请根据以下真实场景生成中文 AAC / 图片沟通卡候选。
+  return `请根据以下真实场景生成中文 AAC / 图片表达系统。
 场景：${input.text || input.scenario || input.original_text}
 
 必须返回 JSON：
 {
   "title": "短标题",
+  "core_cards": [{"label":"核心卡文字","purpose":"用途","icon_suggestion":"emoji"}],
+  "scenario_cards": [{"label":"场景卡文字","purpose":"用途","icon_suggestion":"emoji"}],
+  "function_cards": [{"label":"功能表达卡文字","purpose":"用途","icon_suggestion":"emoji"}],
   "communication_cards": [{"label":"卡片文字","purpose":"用途","icon_suggestion":"emoji"}],
   "adult_guidance": ["2到4条成人使用提示"],
   "safety_note": "安全提醒"
 }
 规则：
-- 生成 6 到 10 张表达卡。
-- 必须包含：我需要帮助、我需要休息、我没听懂、请再说一次、停止、不要、太吵了、你理解错了。
+- 生成三类卡片：固定核心卡、当前场景卡、功能表达卡。
+- core_cards 必须包含：我需要帮助、我需要休息、我没听懂、请再说一次、停止、不要、太吵了、你理解错了。
+- scenario_cards 根据具体场景生成物品、地点、活动、人物或感官相关词。
+- function_cards 支持请求、拒绝、澄清、修复误解、选择、等待。
+- communication_cards 可以是三类卡片的合并版本，方便旧前端兼容。
 - 卡片是表达选项，不代表孩子一定有这些想法。
 - 不要诊断，不要解释行为原因，不要推断隐藏意图，不要做治疗建议。
 - 重点支持孩子表达需求、边界、拒绝、澄清和请求重复。`;
@@ -98,6 +105,7 @@ function buildPartnerPrompt(input) {
 {
   "original": "成人原话",
   "rewritten_steps": ["3到6个短句，每句只包含一个具体动作或一个明确选择"],
+  "modeling_script": ["成人怎么一边说短句、一边指向或示范使用表达卡"],
   "guidance": ["2到4条改写原则"],
   "safety_note": "安全提醒"
 }
@@ -106,7 +114,8 @@ function buildPartnerPrompt(input) {
 - 不要声称这样能治疗或纠正自闭症。
 - 不要加入惩罚、威胁、羞辱、强迫眼神接触、逼问原因等内容。
 - 优先去掉“赶紧、快点、不然、你怎么还不、表现好一点”等压力表达。
-- 输出应帮助沟通伙伴说得更清楚，而不是让孩子更听话。`;
+- modeling_script 使用 Aided Language Modeling 思路：成人说一句短句，同时示范可点选的表达卡，例如“我没听懂”“我想休息”“请再说一次”。
+- 输出应帮助沟通伙伴说得更清楚并示范表达方式，而不是让孩子更听话。`;
 }
 
 async function callOpenAI(prompt, provider) {
@@ -140,17 +149,23 @@ function safeParseJson(text) {
 }
 
 function normalizeAAC(pkg, provider, original) {
-  const cards = Array.isArray(pkg.communication_cards) ? [...pkg.communication_cards] : [];
-  const labels = new Set(cards.map(c => String(c.label || "")));
+  const coreCards = Array.isArray(pkg.core_cards) ? [...pkg.core_cards] : [];
+  const scenarioCards = Array.isArray(pkg.scenario_cards) ? [...pkg.scenario_cards] : [];
+  const functionCards = Array.isArray(pkg.function_cards) ? [...pkg.function_cards] : [];
+  const coreLabels = new Set(coreCards.map(c => String(c.label || "")));
   for (const label of REQUIRED_CARDS) {
-    if (!labels.has(label)) cards.push({ label, purpose: "帮助孩子表达需求、边界或澄清误解", icon_suggestion: icon(label) });
+    if (!coreLabels.has(label)) coreCards.push({ label, purpose: "跨场景核心表达，帮助孩子表达需求、边界或澄清误解", icon_suggestion: icon(label) });
   }
+  const cards = [...coreCards, ...scenarioCards, ...functionCards];
   return {
     provider: provider.name,
     source: provider.source,
     mode: "aac",
     title: pkg.title || "AAC 沟通卡",
     original,
+    core_cards: coreCards.slice(0, 10),
+    scenario_cards: scenarioCards.slice(0, 8),
+    function_cards: functionCards.slice(0, 8),
     communication_cards: cards.slice(0, 12),
     adult_guidance: Array.isArray(pkg.adult_guidance) ? pkg.adult_guidance.slice(0, 4) : ["把卡片放在孩子能看到、能选择的位置。", "接受指、点、拿卡片、文字、手势等多种表达方式。"],
     safety_note: pkg.safety_note || "这些卡片只是表达选项，不代表孩子一定有这些想法；使用前需要成人和专业人员确认。"
@@ -165,22 +180,21 @@ function normalizePartner(pkg, provider, original) {
     mode: "partner",
     original: pkg.original || original,
     rewritten_steps: steps.slice(0, 6),
+    modeling_script: Array.isArray(pkg.modeling_script) ? pkg.modeling_script.slice(0, 5) : [],
     guidance: Array.isArray(pkg.guidance) ? pkg.guidance.slice(0, 4) : ["一次只说一个步骤。", "用具体动作代替抽象要求。"],
     safety_note: pkg.safety_note || "这是沟通材料草稿，不是医疗或治疗建议，需要成人和专业人员确认后使用。"
   };
 }
 
 function normalize(pkg, provider) {
-  const cards = Array.isArray(pkg.communication_cards) ? pkg.communication_cards : [];
-  const labels = new Set(cards.map(c => String(c.label || "")));
-  for (const label of REQUIRED_CARDS) if (!labels.has(label)) cards.push({ label, purpose: "帮助孩子表达需求、边界或澄清误解", icon_suggestion: icon(label) });
   return {
     provider: provider.name, source: provider.source,
-    title: pkg.title || "AI 生成视觉支持包",
-    summary: pkg.summary || "这是一份供成人和专业人员审阅的视觉支持材料草稿。",
+    title: pkg.title || "AI 生成视觉流程支持",
+    summary: pkg.summary || "这是一份供成人和专业人员审阅的视觉流程支持草稿。",
     visual_schedule: Array.isArray(pkg.visual_schedule) ? pkg.visual_schedule.slice(0, 8) : [],
+    first_then: pkg.first_then || {},
     social_story: Array.isArray(pkg.social_story) ? pkg.social_story.slice(0, 8) : [],
-    communication_cards: cards.slice(0, 12),
+    card_suggestions: Array.isArray(pkg.card_suggestions) ? pkg.card_suggestions.slice(0, 8) : [],
     adult_guidance: Array.isArray(pkg.adult_guidance) ? pkg.adult_guidance.slice(0, 8) : [],
     safety_note: pkg.safety_note || "AI 生成内容只是草稿，需要成人和专业人员确认后再使用。"
   };

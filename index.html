@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI 自闭症沟通支持工具包 v0.2</title>
+  <title>AI 自闭症沟通支持工具包 v0.2.1</title>
   <style>
     :root{
       --paper:#f8f4ec;--card:#fffaf1;--ink:#24302b;--muted:#6b746f;--line:rgba(36,48,43,.14);
@@ -27,7 +27,7 @@
 <body>
   <main class="shell">
     <header class="top">
-      <div class="brand"><div class="logo">绿</div><div><div class="title">AI 自闭症沟通支持工具包</div><div class="sub">Concept Prototype v0.2 · 非治疗工具</div></div></div>
+      <div class="brand"><div class="logo">绿</div><div><div class="title">AI 自闭症沟通支持工具包</div><div class="sub">Concept Prototype v0.2.1 · 非治疗工具</div></div></div>
       <div class="badges"><span class="badge">安全优先</span><span class="badge">复刻成熟方法</span><span class="badge">获得专业反馈</span></div>
     </header>
     <section class="api warning top-api" id="api-card">
@@ -74,8 +74,8 @@
     <section class="section" id="demo">
       <nav class="tabs">
         <button class="tab active" data-tab="visual" onclick="switchTab('visual')"><strong>模块一｜视觉支持生成器</strong><span>日程表、步骤图、社交故事</span></button>
-        <button class="tab" data-tab="aac" onclick="switchTab('aac')"><strong>模块二｜AAC 沟通卡</strong><span>休息、停止、没听懂、再说一次</span></button>
-        <button class="tab" data-tab="partner" onclick="switchTab('partner')"><strong>模块三｜语言简化器</strong><span>把成人复杂表达改成短句</span></button>
+        <button class="tab" data-tab="aac" onclick="switchTab('aac')"><strong>模块二｜表达卡系统</strong><span>核心卡、场景卡、功能表达卡</span></button>
+        <button class="tab" data-tab="partner" onclick="switchTab('partner')"><strong>模块三｜沟通伙伴支持</strong><span>语言简化 + 示范使用表达卡</span></button>
       </nav>
       <div class="work">
         <aside class="panel">
@@ -89,18 +89,18 @@
             <button class="btn full" id="visual-generate-btn" onclick="generateVisualAI()">根据输入生成视觉支持材料</button><button class="btn secondary full" onclick="generateVisual()">查看本地兜底结果</button>
           </div>
           <div id="controls-aac" class="hidden">
-            <h2>AAC 沟通卡生成器</h2><p class="helper">生成孩子可以选择的表达卡；AI 不推断孩子想法。</p>
+            <h2>表达卡系统</h2><p class="helper">生成核心卡、场景卡和功能表达卡；AI 不推断孩子想法。</p>
             <div class="grid2"><button class="preset active" onclick="setAAC('transition',this)">活动转换</button><button class="preset" onclick="setAAC('noise',this)">环境太吵</button><button class="preset" onclick="setAAC('refuse',this)">想休息/拒绝</button><button class="preset" onclick="setAAC('unclear',this)">没听懂指令</button></div>
             <label>场景描述</label><textarea id="aac-input">活动结束后，需要从一个房间换到另一个房间继续活动。</textarea><button class="btn full" onclick="generateAAC()">根据输入生成沟通卡</button>
           </div>
           <div id="controls-partner" class="hidden">
-            <h2>沟通伙伴语言简化器</h2><p class="helper">把成人原话拆成更短、更具体、更低压力的表达。</p>
+            <h2>沟通伙伴支持</h2><p class="helper">把成人原话拆成低压力短句，并生成示范使用表达卡的脚本。</p>
             <div class="grid2"><button class="preset active" onclick="setPartner('rush',this)">赶紧收拾</button><button class="preset" onclick="setPartner('rules',this)">活动规则</button><button class="preset" onclick="setPartner('wait',this)">排队等待</button><button class="preset" onclick="setPartner('choice',this)">做选择</button></div>
             <label>成人原话</label><textarea id="partner-input">你赶紧把东西收拾好，然后去洗手，我们马上要出门了，不然就迟到了。</textarea><button class="btn full" onclick="generatePartner()">改写成低压力表达</button>
           </div>
         </aside>
         <section class="out">
-          <div class="output-head"><div><h2 id="output-title">第一次参加夏令营｜视觉支持包</h2><p class="helper" id="output-subtitle">输出包含：流程图、表达卡、成人提示语。</p></div><button class="btn secondary" onclick="copySummary()">复制摘要</button></div>
+          <div class="output-head"><div><h2 id="output-title">第一次参加夏令营｜视觉流程支持</h2><p class="helper" id="output-subtitle">输出包含：视觉日程表、First-Then、社交叙事。</p></div><button class="btn secondary" onclick="copySummary()">复制摘要</button></div>
           <div class="canvas"><div id="output"></div></div>
         </section>
       </div>
@@ -109,7 +109,7 @@
   <div class="toast" id="toast"></div>
   <script>
     const storeKey="ai-autism-toolkit-temp-api";let currentSummary="";
-    const visualPresets={camp:{title:"第一次参加夏令营｜视觉支持包",input:"明天第一次参加夏令营，需要和新老师、新同学一起活动，可能会紧张。",steps:[["🏠","从家出发","我会带好自己的东西。"],["👋","见到老师","我可以打招呼，也可以点头。"],["🗓️","看今日流程","老师会告诉我先做什么。"],["🏃","参加活动","我可以一步一步做。"],["🧘","需要休息","如果紧张，我可以说我需要休息。"]],cards:[["🙋","我需要帮助"],["🧘","我需要休息"],["❓","我没听懂"],["🔁","请再说一次"]]},doctor:{title:"去医院检查｜视觉支持包",input:"下午要去医院检查，可能会遇到陌生医生和仪器。",steps:[["🚗","坐车去医院","我会和家人一起去。"],["🧾","排队登记","我们可能需要等一会儿。"],["👨‍⚕️","见医生","医生会问几个问题。"],["🩺","做检查","医生会告诉我先做什么。"],["🏠","回家休息","完成后可以回家。"]],cards:[["😟","我害怕"],["✋","暂停"],["🧘","休息"],["❓","这是什么"]]},sports:{title:"体育活动｜视觉支持包",input:"下午要参加体育活动，有规则、轮流和团队合作。",steps:[["👟","准备装备","我先准备好鞋子和水。"],["👂","听规则","老师会说今天怎么做。"],["👀","看示范","我可以先看别人做一次。"],["🔄","轮到我","轮到我时再开始。"],["💧","喝水整理","最后喝水、整理东西。"]],cards:[["⏸️","等一下"],["🏃","轮到我"],["🧘","休息"],["🔇","太吵了"]]},sleep:{title:"洗澡睡觉｜视觉支持包",input:"晚上需要从玩耍转换到洗澡、刷牙和睡觉。",steps:[["⏰","提前提醒","还有10分钟结束玩耍。"],["🧸","收好玩具","玩具明天还可以玩。"],["🚿","洗澡","我先洗澡。"],["🪥","刷牙","然后刷牙。"],["💤","睡觉","我可以休息了。"]],cards:[["⏰","再等5分钟"],["🧸","我要玩具"],["🧘","休息"],["💬","陪陪我"]]}};
+    const visualPresets={camp:{title:"第一次参加夏令营｜视觉流程支持",input:"明天第一次参加夏令营，需要和新老师、新同学一起活动，可能会紧张。",steps:[["🏠","从家出发","我会带好自己的东西。"],["👋","见到老师","我可以打招呼，也可以点头。"],["🗓️","看今日流程","老师会告诉我先做什么。"],["🏃","参加活动","我可以一步一步做。"],["🧘","需要休息","如果紧张，我可以说我需要休息。"]],cards:[["🙋","我需要帮助"],["🧘","我需要休息"],["❓","我没听懂"],["🔁","请再说一次"]]},doctor:{title:"去医院检查｜视觉流程支持",input:"下午要去医院检查，可能会遇到陌生医生和仪器。",steps:[["🚗","坐车去医院","我会和家人一起去。"],["🧾","排队登记","我们可能需要等一会儿。"],["👨‍⚕️","见医生","医生会问几个问题。"],["🩺","做检查","医生会告诉我先做什么。"],["🏠","回家休息","完成后可以回家。"]],cards:[["😟","我害怕"],["✋","暂停"],["🧘","休息"],["❓","这是什么"]]},sports:{title:"体育活动｜视觉流程支持",input:"下午要参加体育活动，有规则、轮流和团队合作。",steps:[["👟","准备装备","我先准备好鞋子和水。"],["👂","听规则","老师会说今天怎么做。"],["👀","看示范","我可以先看别人做一次。"],["🔄","轮到我","轮到我时再开始。"],["💧","喝水整理","最后喝水、整理东西。"]],cards:[["⏸️","等一下"],["🏃","轮到我"],["🧘","休息"],["🔇","太吵了"]]},sleep:{title:"洗澡睡觉｜视觉流程支持",input:"晚上需要从玩耍转换到洗澡、刷牙和睡觉。",steps:[["⏰","提前提醒","还有10分钟结束玩耍。"],["🧸","收好玩具","玩具明天还可以玩。"],["🚿","洗澡","我先洗澡。"],["🪥","刷牙","然后刷牙。"],["💤","睡觉","我可以休息了。"]],cards:[["⏰","再等5分钟"],["🧸","我要玩具"],["🧘","休息"],["💬","陪陪我"]]}};
     const aacPresets={transition:[["❓","我没听懂","表达没有理解下一步。"],["🎒","我要拿东西","需要先处理自己的物品。"],["🧘","我想休息","请求暂停。"],["🔁","请再说一次","请求成人用短句重复。"]],noise:[["🔇","太吵了","表达声音环境不舒服。"],["🤫","我要安静","请求更安静的位置。"],["🚪","我要离开一下","请求短暂离开。"],["🎧","我需要耳机","请求降噪工具。"]],refuse:[["✋","停止","表达不继续当前动作。"],["🧘","我想休息","请求暂停。"],["🙅","我不想继续","表达拒绝继续参与。"],["🤕","我不舒服","需要成人进一步确认。"]],unclear:[["❓","我没听懂","表达没有理解任务。"],["👀","请给我一个例子","请求成人示范。"],["1️⃣","请一步一步说","请求拆分任务。"],["🙋","我需要帮助","请求支持。"]]};
     const partnerPresets={rush:["你赶紧把东西收拾好，然后去洗手，我们马上要出门了，不然就迟到了。",["先收拾书包。","然后去洗手。","最后我们出门。","我会等你两分钟。"]],rules:["等一下你们要遵守规则，不要乱跑，不要抢别人东西，听老师的话，表现好一点。",["第一，站在自己的位置。","第二，轮到你时再开始。","第三，如果想停下，可以说“我想休息”。"]],wait:["你再等等，马上就好了，不要一直问，大家都在排队。",["现在要等5分钟。","你可以看计时器。","等待时可以选择：看卡片、喝水、坐着休息。"]],choice:["你到底想要哪个？你快点选，不选我就帮你选了。",["你可以选A或B。","我给你一点时间。","如果不想选，可以说“我还没想好”。"]]};
     function showToast(t){const el=document.getElementById("toast");el.textContent=t;el.classList.add("show");clearTimeout(window.tt);window.tt=setTimeout(()=>el.classList.remove("show"),2500)}
@@ -121,7 +121,7 @@
     async function checkApi(){if(location.protocol==="file:"){setApi("warning","本地预览","file:// 本地页面没有 Cloudflare Function，部署后再测试连接。");return}try{const c=apiConfig(),h=c?{"x-client-provider":c.provider,"x-client-api-key":c.api_key,"x-client-model":c.model}:{};const r=await fetch("/api/generate",{headers:h,cache:"no-store"}),d=await r.json();if(d.provider_configured){setApi("connected","已连接",`已检测到 ${d.provider}（${d.source==="client"?"临时 Key":"环境变量"}）。`)}else setApi("warning","未配置 Key","Function 可访问，但还没有配置 API Key。")}catch(e){setApi("error","未连接","没有检测到 /api/generate，请确认部署了 functions/api/generate.js。")}}
     function activate(btn){btn?.parentElement?.querySelectorAll(".preset").forEach(b=>b.classList.remove("active"));btn?.classList.add("active")}
     function switchTab(tab){document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b.dataset.tab===tab));["visual","aac","partner"].forEach(n=>document.getElementById("controls-"+n).classList.toggle("hidden",n!==tab));if(tab==="visual")generateVisual();if(tab==="aac")generateAAC();if(tab==="partner")generatePartner()}
-    function render(pkg){document.getElementById("output-title").textContent=pkg.title||"AI 生成视觉支持包";document.getElementById("output-subtitle").textContent=pkg.summary||"输出包含：视觉日程表、社交故事、沟通卡和成人提示。";const steps=pkg.visual_schedule||[],cards=pkg.communication_cards||[];document.getElementById("output").innerHTML=`<div class="schedule">${steps.map((s,i)=>`<article class="step"><div class="icon">${s.icon_suggestion||"🧩"}</div><h4>${s.title||"步骤"+(i+1)}</h4><p>${s.child_sentence||""}</p></article>`).join("")}</div><div class="cards">${cards.map(c=>`<article class="card"><div class="icon">${c.icon_suggestion||"💬"}</div><strong>${c.label||""}</strong><p>${c.purpose||""}</p></article>`).join("")}</div><div class="box"><h3>社交故事 / 成人提示</h3><ol>${[...(pkg.social_story||[]),...(pkg.adult_guidance||[])].map(x=>`<li>${x}</li>`).join("")}</ol></div><div class="safe">${pkg.safety_note||"AI 生成内容只是草稿，需要成人和专业人员确认后再使用。"}</div>`;currentSummary=`${pkg.title||"视觉支持包"}：包含 ${steps.length} 个步骤、${cards.length} 张沟通卡。`}
+    function render(pkg){document.getElementById("output-title").textContent=pkg.title||"AI 生成视觉流程支持";document.getElementById("output-subtitle").textContent=pkg.summary||"输出包含：视觉日程表、First-Then、社交叙事和成人展示建议。";const steps=pkg.visual_schedule||[],firstThen=pkg.first_then||{},cardTips=pkg.card_suggestions||[];document.getElementById("output").innerHTML=`<div class="schedule">${steps.map((s,i)=>`<article class="step"><div class="icon">${esc(s.icon_suggestion||"🧩")}</div><h4>${esc(s.title||"步骤"+(i+1))}</h4><p>${esc(s.child_sentence||"")}</p></article>`).join("")}</div><div class="box"><h3>First-Then / 先后图</h3><p><strong>先：</strong>${esc(firstThen.first||steps[0]?.title||"看流程")}</p><p><strong>后：</strong>${esc(firstThen.then||steps[1]?.title||"做下一步")}</p></div><div class="box"><h3>社交叙事</h3><ol>${(pkg.social_story||[]).map(x=>`<li>${esc(x)}</li>`).join("")}</ol></div><div class="box"><h3>成人展示建议</h3><ol>${(pkg.adult_guidance||[]).map(x=>`<li>${esc(x)}</li>`).join("")}</ol>${cardTips.length?`<p class="note">建议搭配模块 2 表达卡：${cardTips.map(esc).join("、")}</p>`:""}</div><div class="safe">${esc(pkg.safety_note||"AI 生成内容只是草稿，需要成人和专业人员确认后再使用。")}</div>`;currentSummary=`${pkg.title||"视觉流程支持"}：包含 ${steps.length} 个视觉步骤、First-Then 和社交叙事。`}
     function localVisualSupport(scenario){
       const text=String(scenario||"新的活动场景").trim();
       const lower=text.toLowerCase();
@@ -130,16 +130,17 @@
       if(/夏令营|营地|老师|同学/.test(text))steps=[["🏠","从家出发","我会带好自己的东西。"],["👋","见到老师","我可以打招呼，也可以点头。"],["🗓️","看今日流程","老师会告诉我先做什么。"],["🏃","参加活动","我可以一步一步做。"],["🧘","需要休息","如果紧张，我可以说我需要休息。"]];
       if(/睡觉|洗澡|刷牙|晚上/.test(text))steps=[["⏰","提前提醒","还有一会儿要开始晚间流程。"],["🧸","收好东西","东西明天还可以继续用。"],["🚿","洗澡","我先洗澡。"],["🪥","刷牙","然后刷牙。"],["💤","睡觉","我可以休息了。"]];
       if(/体育|篮球|运动|跑|球/.test(text))steps=[["👟","准备装备","我先准备好鞋子和水。"],["👂","听规则","老师会说今天怎么做。"],["👀","看示范","我可以先看别人做一次。"],["🔄","轮到我","轮到我时再开始。"],["💧","喝水整理","最后喝水、整理东西。"]];
-      return {title:"根据输入生成｜视觉支持包",summary:"本地兜底：根据关键词生成初步结构；部署后可用 AI 细化。",visual_schedule:steps.map((s,i)=>({step:i+1,icon_suggestion:s[0],title:s[1],child_sentence:s[2]})),communication_cards:[["🙋","我需要帮助"],["🧘","我需要休息"],["❓","我没听懂"],["🔁","请再说一次"],["✋","停止"],["🔇","太吵了"]].map(c=>({icon_suggestion:c[0],label:c[1],purpose:"帮助孩子表达需求、边界或澄清"})),social_story:["接下来会发生一件事。","我可以先看流程。","我可以一步一步做。","如果不舒服，我可以表达需要帮助或休息。"],adult_guidance:["提前展示流程。","一次只说一个步骤。","保留休息、停止和没听懂的表达方式。"],safety_note:"本地兜底内容只是草稿，需要成人和专业人员确认后再使用。"};
+      return {title:"根据输入生成｜视觉流程支持",summary:"本地兜底：根据关键词生成视觉日程表、First-Then 和社交叙事；部署后可用 AI 细化。",visual_schedule:steps.map((s,i)=>({step:i+1,icon_suggestion:s[0],title:s[1],child_sentence:s[2]})),first_then:{first:steps[0]?.[1]||"看流程",then:steps[1]?.[1]||"做下一步"},card_suggestions:["我需要帮助","我需要休息","我没听懂","请再说一次"],social_story:["接下来会发生一件事。","我可以先看流程。","我可以一步一步做。","如果不舒服，我可以用表达卡告诉成人。"],adult_guidance:["提前展示完整流程。","转场时只展示 First-Then。","真正的表达卡请到模块 2 生成。"],safety_note:"本地兜底内容只是草稿，需要成人和专业人员确认后再使用。"};
     }
     function setVisual(k,b){activate(b);document.getElementById("visual-input").value=visualPresets[k].input;generateVisual(k)}
-    function generateVisual(k){const scenario=document.getElementById("visual-input").value.trim();if(k&&visualPresets[k]&&scenario===visualPresets[k].input){const p=visualPresets[k];render({title:p.title,summary:"本地示例：展示视觉支持输出结构。",visual_schedule:p.steps.map((s,i)=>({step:i+1,icon_suggestion:s[0],title:s[1],child_sentence:s[2]})),communication_cards:p.cards.map(c=>({icon_suggestion:c[0],label:c[1],purpose:"帮助孩子表达需求或边界"})),social_story:["我会去一个可能有点新的场景。","新的事情有时会让我紧张。","我可以一步一步来。"],adult_guidance:["提前展示流程。","一次只说一个步骤。","保留休息、停止和没听懂的表达方式。"]});return}render(localVisualSupport(scenario))}
+    function generateVisual(k){const scenario=document.getElementById("visual-input").value.trim();if(k&&visualPresets[k]&&scenario===visualPresets[k].input){const p=visualPresets[k];render({title:p.title.replace("支持包","流程支持"),summary:"本地示例：视觉日程表 + First-Then + 社交叙事。",visual_schedule:p.steps.map((s,i)=>({step:i+1,icon_suggestion:s[0],title:s[1],child_sentence:s[2]})),first_then:{first:p.steps[0]?.[1]||"看流程",then:p.steps[1]?.[1]||"做下一步"},card_suggestions:p.cards.map(c=>c[1]),social_story:["我会去一个可能有点新的场景。","新的事情有时会让我紧张。","我可以先看流程，再一步一步来。"],adult_guidance:["提前展示完整流程。","转场时只展示 First-Then。","表达卡请到模块 2 生成。"]});return}render(localVisualSupport(scenario))}
     async function generateVisualAI(){const btn=document.getElementById("visual-generate-btn"),old=btn.textContent,scenario=document.getElementById("visual-input").value.trim();if(!scenario)return showToast("先写一个真实场景");if(location.protocol==="file:"){render(localVisualSupport(scenario));showToast("本地预览：已用兜底规则生成，部署后可走 AI");return}btn.textContent="正在生成...";btn.disabled=true;try{const r=await fetch("/api/generate",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({mode:"visual",scenario,communication_context:document.getElementById("visual-child").value,goal:document.getElementById("visual-goal").value,setting:document.getElementById("visual-setting").value,client_api:apiConfig()})});const d=await r.json();if(!r.ok)throw new Error(d.error||"生成失败");render(d);showToast(`已用 ${d.provider||"AI"} 生成`)}catch(e){console.warn(e);showToast("AI 生成失败，先显示本地兜底");render(localVisualSupport(scenario))}finally{btn.textContent=old;btn.disabled=false}}
     function aacPresetInput(k){return {transition:"活动结束后，需要从一个房间换到另一个房间继续活动。",noise:"活动现场声音很大，孩子可能需要表达太吵或想去安静处。",refuse:"孩子可能不想继续当前活动，需要表达停止、休息或不想继续。",unclear:"老师说了一个比较长的任务，孩子可能没有听懂下一步。"}[k]||"活动中孩子需要表达自己的需求、边界或没听懂。"}
-    function localAACCards(text){const base=[["🙋","我需要帮助","请求成人提供支持。"],["🧘","我想休息","请求暂停或休息。"],["✋","停止","表达不要继续当前动作。"],["❓","我没听懂","表达没有理解当前要求。"],["🔁","请再说一次","请求成人用短句重复。"],["💬","你理解错了","用于澄清误解。"]];if(/吵|声音|噪音|安静/.test(text))base.unshift(["🔇","太吵了","表达声音环境不舒服。"],["🚪","我想去安静的地方","请求换到低刺激环境。"]);if(/换|转场|结束|房间|出门/.test(text))base.unshift(["🎒","我要先拿东西","表达需要先处理物品。"],["➡️","下一步是什么","请求确认接下来的步骤。"]);if(/选择|选|哪个/.test(text))base.unshift(["A/B","我想选这个","表达自己的选择。"],["⏳","我还没想好","请求更多选择时间。"]);return base.slice(0,8)}
-    function renderAACOutput(cards,sourceLabel="本地规则"){document.getElementById("output-title").textContent="AAC 沟通卡生成器｜表达选项";document.getElementById("output-subtitle").textContent=`根据当前输入生成可选择表达。来源：${sourceLabel}`;document.getElementById("output").innerHTML=`<div class="cards">${cards.map(c=>`<article class="card"><div class="icon">${esc(c.icon_suggestion||c[0]||"💬")}</div><strong>${esc(c.label||c[1]||"表达卡")}</strong><p>${esc(c.purpose||c[2]||"帮助表达需求或澄清。")}</p></article>`).join("")}</div><div class="safe">这些卡片只是表达选项，不代表孩子一定有这些想法。实际使用前应由康复老师/负责人确认。</div>`;currentSummary=`AAC 沟通卡：建议准备 ${cards.map(c=>c.label||c[1]).join("、")}。`}
+    function localAACCards(text){const core=[["🙋","我需要帮助","请求成人提供支持。"],["🧘","我想休息","请求暂停或休息。"],["✋","停止","表达不要继续当前动作。"],["❓","我没听懂","表达没有理解当前要求。"],["🔁","请再说一次","请求成人用短句重复。"],["💬","你理解错了","用于澄清误解。"]];let scene=[["➡️","下一步是什么","请求确认接下来的步骤。"],["⏳","我还没准备好","请求更多处理时间。"]];if(/吵|声音|噪音|安静/.test(text))scene=[["🔇","太吵了","表达声音环境不舒服。"],["🚪","我想去安静的地方","请求换到低刺激环境。"],...scene];if(/换|转场|结束|房间|出门/.test(text))scene=[["🎒","我要先拿东西","表达需要先处理物品。"],["➡️","下一步是什么","请求确认接下来的步骤。"],...scene];if(/篮球|体育|运动|球/.test(text))scene=[["🏀","篮球","当前活动词。"],["💧","喝水","请求喝水或提醒水杯。"],["🔄","轮到我了吗","询问轮次。"],...scene];if(/选择|选|哪个/.test(text))scene=[["A/B","我想选这个","表达自己的选择。"],["⏳","我还没想好","请求更多选择时间。"],...scene];const func=[["🚫","我不想继续","表达拒绝继续。"],["👀","请给我看一次","请求示范。"],["✅","完成了","表达任务完成。"],["🤔","我还没想好","表达需要更多时间。"]];return {core_cards:core.slice(0,6),scenario_cards:scene.slice(0,6),function_cards:func.slice(0,6)}}
+    function renderCardSection(title,cards){return `<div class="box"><h3>${esc(title)}</h3><div class="cards">${cards.map(c=>`<article class="card"><div class="icon">${esc(c.icon_suggestion||c[0]||"💬")}</div><strong>${esc(c.label||c[1]||"表达卡")}</strong><p>${esc(c.purpose||c[2]||"帮助表达需求或澄清。")}</p></article>`).join("")}</div></div>`}
+    function renderAACOutput(pkg,sourceLabel="本地规则"){const flat=Array.isArray(pkg)?pkg:pkg.communication_cards;const core=Array.isArray(pkg)?flat.slice(0,4):(pkg.core_cards||[]);const scene=Array.isArray(pkg)?flat.slice(4,8):(pkg.scenario_cards||[]);const func=Array.isArray(pkg)?flat.slice(8):(pkg.function_cards||[]);document.getElementById("output-title").textContent="表达卡系统｜核心卡 + 场景卡 + 功能卡";document.getElementById("output-subtitle").textContent=`根据当前输入生成可选择表达。来源：${sourceLabel}`;document.getElementById("output").innerHTML=`${renderCardSection("固定核心卡｜跨场景都保留",core)}${renderCardSection("当前场景卡｜这次活动需要",scene)}${renderCardSection("功能表达卡｜请求、拒绝、澄清、选择",func)}<div class="safe">这些卡片只是表达选项，不代表孩子一定有这些想法。实际使用前应由康复老师/负责人确认。</div>`;currentSummary=`AAC 表达系统：核心卡 ${core.length} 张，场景卡 ${scene.length} 张，功能卡 ${func.length} 张。`}
     function setAAC(k,b){activate(b);document.getElementById("aac-input").value=aacPresetInput(k);generateAAC(k)}
-    async function generateAAC(k="transition"){const text=document.getElementById("aac-input").value.trim()||aacPresetInput(k);if(location.protocol!=="file:"){try{const r=await fetch("/api/generate",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({mode:"aac",text,client_api:apiConfig()})});const d=await r.json();if(r.ok&&Array.isArray(d.communication_cards)&&d.communication_cards.length){renderAACOutput(d.communication_cards,`${d.provider||"AI"}`);return}}catch(e){console.warn("AAC API failed, using local fallback",e)}}renderAACOutput(localAACCards(text),"本地规则")}
+    async function generateAAC(k="transition"){const text=document.getElementById("aac-input").value.trim()||aacPresetInput(k);if(location.protocol!=="file:"){try{const r=await fetch("/api/generate",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({mode:"aac",text,client_api:apiConfig()})});const d=await r.json();if(r.ok&&(Array.isArray(d.communication_cards)||Array.isArray(d.core_cards))){renderAACOutput(d,`${d.provider||"AI"}`);return}}catch(e){console.warn("AAC API failed, using local fallback",e)}}renderAACOutput(localAACCards(text),"本地规则")}
     function setPartner(k,b){activate(b);document.getElementById("partner-input").value=partnerPresets[k][0];generatePartner(k)}
     function esc(v){return String(v??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#39;")}
     function localPartnerRewrite(text){
@@ -156,12 +157,12 @@
         return "然后"+action;
       });
       if(!steps.some(s=>s.includes("时间")||s.includes("等")))steps.push("我会给你一点时间。");
-      return {steps,guidance:["去掉“赶紧 / 不然”等压力词。","一次只说一个步骤。","用具体动作代替抽象要求。"]};
+      return {steps,guidance:["去掉“赶紧 / 不然”等压力词。","一次只说一个步骤。","用具体动作代替抽象要求。"],modeling:["成人说一个短句时，同时指向对应表达卡。","示范“我没听懂”“我想休息”“请再说一次”等卡片，不要求孩子立刻使用。","说完后等待，不替孩子选择。"]};
     }
-    function renderPartnerOutput(original,steps,guidance=[],sourceLabel="本地规则"){
-      document.getElementById("output-title").textContent="沟通伙伴语言简化器";
-      document.getElementById("output-subtitle").textContent=`根据当前输入改写成短句、具体步骤。来源：${sourceLabel}`;
-      document.getElementById("output").innerHTML=`<div class="box"><h3>成人原话</h3><p>${esc(original)}</p></div><div class="box"><h3>改写后</h3><ol>${steps.map(x=>`<li>${esc(x)}</li>`).join("")}</ol></div>${guidance.length?`<div class="box"><h3>改写原则</h3><ul>${guidance.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>`:""}<div class="safe">这不是让孩子更听话的工具，而是帮助沟通伙伴降低语言复杂度；输出只是草稿，需要成人和专业人员确认。</div>`;
+    function renderPartnerOutput(original,steps,guidance=[],sourceLabel="本地规则",modeling=[]){
+      document.getElementById("output-title").textContent="沟通伙伴支持";
+      document.getElementById("output-subtitle").textContent=`根据当前输入生成低压力短句 + AAC 示范脚本。来源：${sourceLabel}`;
+      document.getElementById("output").innerHTML=`<div class="box"><h3>成人原话</h3><p>${esc(original)}</p></div><div class="box"><h3>低压力短句</h3><ol>${steps.map(x=>`<li>${esc(x)}</li>`).join("")}</ol></div>${modeling.length?`<div class="box"><h3>Aided Language Modeling｜成人示范脚本</h3><ol>${modeling.map(x=>`<li>${esc(x)}</li>`).join("")}</ol></div>`:""}${guidance.length?`<div class="box"><h3>等待与确认提醒</h3><ul>${guidance.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>`:""}<div class="safe">这不是让孩子更听话的工具，而是帮助沟通伙伴降低语言复杂度并示范如何使用表达卡；输出只是草稿，需要成人和专业人员确认。</div>`;
       currentSummary=`语言简化：${steps.join(" ")}`;
     }
     async function generatePartner(k="rush"){
@@ -171,13 +172,13 @@
           const r=await fetch("/api/generate",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({mode:"partner",text:input,client_api:apiConfig()})});
           const d=await r.json();
           if(r.ok&&Array.isArray(d.rewritten_steps)&&d.rewritten_steps.length){
-            renderPartnerOutput(input,d.rewritten_steps,d.guidance||[],`${d.provider||"AI"}`);
+            renderPartnerOutput(input,d.rewritten_steps,d.guidance||[],`${d.provider||"AI"}`,d.modeling_script||d.aided_language_modeling||[]);
             return;
           }
         }catch(e){console.warn("Partner API failed, using local fallback",e)}
       }
       const local=localPartnerRewrite(input);
-      renderPartnerOutput(input,local.steps,local.guidance,"本地规则");
+      renderPartnerOutput(input,local.steps,local.guidance,"本地规则",local.modeling);
     }
     function copySummary(){navigator.clipboard?.writeText(currentSummary);showToast("已复制摘要")}
     function installButtonHandlers(){
