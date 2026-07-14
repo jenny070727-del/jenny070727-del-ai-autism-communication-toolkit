@@ -127,6 +127,28 @@
     function setAAC(k,b){activate(b);generateAAC(k)}function generateAAC(k="transition"){const cards=aacPresets[k]||aacPresets.transition;document.getElementById("output-title").textContent="AAC 沟通卡生成器｜表达选项";document.getElementById("output-subtitle").textContent="只提供可选择表达，不解释行为、不推断意图。";document.getElementById("output").innerHTML=`<div class="cards">${cards.map(c=>`<article class="card"><div class="icon">${c[0]}</div><strong>${c[1]}</strong><p>${c[2]}</p></article>`).join("")}</div><div class="safe">这些卡片只是表达选项，不代表孩子一定有这些想法。实际使用前应由康复老师/负责人确认。</div>`;currentSummary=`AAC 沟通卡：建议准备 ${cards.map(c=>c[1]).join("、")}。`}
     function setPartner(k,b){activate(b);document.getElementById("partner-input").value=partnerPresets[k][0];generatePartner(k)}function generatePartner(k="rush"){const p=partnerPresets[k]||partnerPresets.rush;document.getElementById("output-title").textContent="沟通伙伴语言简化器";document.getElementById("output-subtitle").textContent="把成人复杂表达改成短句、具体步骤。";document.getElementById("output").innerHTML=`<div class="box"><h3>成人原话</h3><p>${document.getElementById("partner-input").value||p[0]}</p></div><div class="box"><h3>改写后</h3><ol>${p[1].map(x=>`<li>${x}</li>`).join("")}</ol></div><div class="safe">这不是让孩子更听话的工具，而是帮助沟通伙伴降低语言复杂度。</div>`;currentSummary=`语言简化：改写为 ${p[1].length} 个短步骤。`}
     function copySummary(){navigator.clipboard?.writeText(currentSummary);showToast("已复制摘要")}
+    function installButtonHandlers(){
+      const map=[
+        ["document.getElementById('demo').scrollIntoView",()=>document.getElementById('demo').scrollIntoView({behavior:'smooth'})],
+        ["syncApiModel()",syncApiModel],["saveApi()",saveApi],["checkApi()",checkApi],["clearApi()",clearApi],
+        ["switchTab('visual')",()=>switchTab('visual')],["switchTab('aac')",()=>switchTab('aac')],["switchTab('partner')",()=>switchTab('partner')],
+        ["setVisual('camp',this)",e=>setVisual('camp',e.currentTarget)],["setVisual('doctor',this)",e=>setVisual('doctor',e.currentTarget)],["setVisual('sports',this)",e=>setVisual('sports',e.currentTarget)],["setVisual('sleep',this)",e=>setVisual('sleep',e.currentTarget)],
+        ["generateVisualAI()",generateVisualAI],["generateVisual()",()=>generateVisual()],
+        ["setAAC('transition',this)",e=>setAAC('transition',e.currentTarget)],["setAAC('noise',this)",e=>setAAC('noise',e.currentTarget)],["setAAC('refuse',this)",e=>setAAC('refuse',e.currentTarget)],["setAAC('unclear',this)",e=>setAAC('unclear',e.currentTarget)],["generateAAC()",()=>generateAAC()],
+        ["setPartner('rush',this)",e=>setPartner('rush',e.currentTarget)],["setPartner('rules',this)",e=>setPartner('rules',e.currentTarget)],["setPartner('wait',this)",e=>setPartner('wait',e.currentTarget)],["setPartner('choice',this)",e=>setPartner('choice',e.currentTarget)],["generatePartner()",()=>generatePartner()],
+        ["copySummary()",copySummary]
+      ];
+      document.querySelectorAll("[onclick], select[onchange]").forEach(el=>{
+        const attr=el.getAttribute("onclick")||el.getAttribute("onchange")||"";
+        const found=map.find(([key])=>attr.includes(key));
+        if(!found)return;
+        el.removeAttribute("onclick");el.removeAttribute("onchange");
+        const eventName=el.tagName==="SELECT"?"change":"click";
+        el.addEventListener(eventName,event=>found[1](event));
+      });
+    }
+    Object.assign(window,{showToast,syncApiModel,saveApi,clearApi,checkApi,switchTab,setVisual,generateVisual,generateVisualAI,setAAC,generateAAC,setPartner,generatePartner,copySummary});
+    installButtonHandlers();
     const saved=JSON.parse(localStorage.getItem(storeKey)||"null");if(saved){document.getElementById("api-provider").value=saved.provider;document.getElementById("api-key").value=saved.api_key;document.getElementById("api-model").value=saved.model;setApi("warning","临时 Key 已保存","已从本浏览器读取临时 API Key。")}generateVisual();
   </script>
 </body>
