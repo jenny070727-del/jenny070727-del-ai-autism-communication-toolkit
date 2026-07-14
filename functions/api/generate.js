@@ -23,15 +23,15 @@ export async function onRequestPost(context) {
     if (!provider) return json({ error: "AI API is not configured." }, 501);
     if (mode === "aac") {
       const raw = provider.name === "openai" ? await callOpenAI(buildAACPrompt(input), provider) : await callDeepSeek(buildAACPrompt(input), provider);
-      return json(normalizeAAC(safeParseJson(raw), provider, scenario));
+      return json(normalizeAAC(safeParseJson(raw), provider, scenario, input));
     }
     if (mode === "partner") {
       const raw = provider.name === "openai" ? await callOpenAI(buildPartnerPrompt(input), provider) : await callDeepSeek(buildPartnerPrompt(input), provider);
-      return json(normalizePartner(safeParseJson(raw), provider, scenario));
+      return json(normalizePartner(safeParseJson(raw), provider, scenario, input));
     }
     const prompt = buildPrompt(input);
     const raw = provider.name === "openai" ? await callOpenAI(prompt, provider) : await callDeepSeek(prompt, provider);
-    const pkg = normalize(safeParseJson(raw), provider);
+    const pkg = normalize(safeParseJson(raw), provider, input);
     return json(pkg);
   } catch (error) {
     return json({ error: "Generation failed.", detail: error.message || String(error) }, 500);
@@ -54,7 +54,7 @@ function chooseProvider(env, clientApi, headers) {
 function buildPrompt(input) {
   return `请根据以下场景生成中文视觉流程支持材料。
 场景：${input.scenario}
-儿童沟通情况：${input.communication_context || "不确定"}
+当前沟通方式：${input.communication_context || modeLabel(input.communication_mode)}
 目标：${input.goal || "提前解释接下来会发生什么"}
 地点：${input.setting || "其他"}
 
@@ -69,12 +69,18 @@ function buildPrompt(input) {
   "adult_guidance": ["3到6条成人提示"],
   "safety_note": "安全提醒"
 }
-规则：5-8个视觉步骤；模块1只负责视觉日程表、First-Then和社交叙事，不直接生成完整AAC卡组；card_suggestions只列出建议去模块2搭配的表达卡名称；不要诊断、不要解释行为原因、不要推断隐藏意图。`;
+规则：5-8个视觉步骤；模块1只负责视觉日程表、First-Then和社交叙事，不直接生成完整AAC卡组；card_suggestions只列出建议去模块2搭配的表达卡名称；不要诊断、不要解释行为原因、不要推断隐藏意图。
+当前沟通方式不是诊断分类，只用于调整输出形式：
+- 不确定：生成保守版本；
+- 图片+短句：保留图标和简短文字；
+- 指点/手势：减少步骤和文字，强调成人接受非口语选择；
+- 有口语但紧张时需要备用表达：加入备用表达建议。`;
 }
 
 function buildAACPrompt(input) {
   return `请根据以下真实场景生成中文 AAC / 图片表达系统。
 场景：${input.text || input.scenario || input.original_text}
+当前沟通方式：${input.communication_context || modeLabel(input.communication_mode)}
 
 必须返回 JSON：
 {
@@ -93,6 +99,11 @@ function buildAACPrompt(input) {
 - function_cards 支持请求、拒绝、澄清、修复误解、选择、等待。
 - communication_cards 可以是三类卡片的合并版本，方便旧前端兼容。
 - 卡片是表达选项，不代表孩子一定有这些想法。
+- 当前沟通方式不是诊断分类，只用于调整卡片数量、文字量、呈现方式和备用表达：
+  - 不确定：保留核心权利表达，生成保守数量；
+  - 图片+短句：图标 + 简短文字；
+  - 指点/手势：更少、更大、更具体的选择，保留停止/休息/帮助/没懂；
+  - 口语紧张不稳定：增加“我现在说不出来”“请等一下”“我想用卡片说”“我想打字”等备用表达。
 - 不要诊断，不要解释行为原因，不要推断隐藏意图，不要做治疗建议。
 - 重点支持孩子表达需求、边界、拒绝、澄清和请求重复。`;
 }
@@ -100,6 +111,7 @@ function buildAACPrompt(input) {
 function buildPartnerPrompt(input) {
   return `请把成人对孩子说的话改写成更短、更具体、低压力的中文表达。
 成人原话：${input.text || input.original_text || input.scenario}
+当前沟通方式：${input.communication_context || modeLabel(input.communication_mode)}
 
 必须返回 JSON：
 {
@@ -115,7 +127,20 @@ function buildPartnerPrompt(input) {
 - 不要加入惩罚、威胁、羞辱、强迫眼神接触、逼问原因等内容。
 - 优先去掉“赶紧、快点、不然、你怎么还不、表现好一点”等压力表达。
 - modeling_script 使用 Aided Language Modeling 思路：成人说一句短句，同时示范可点选的表达卡，例如“我没听懂”“我想休息”“请再说一次”。
+- 当前沟通方式不是诊断分类，只用于调整沟通伙伴支持方式：
+  - 指点/手势：加入“成人依次指卡片、等待孩子用指/点/手势选择”的脚本；
+  - 口语紧张不稳定：加入“可以用卡片、文字或打字替代口语”的脚本；
+  - 不确定：使用保守、低压力、少量选择的脚本。
 - 输出应帮助沟通伙伴说得更清楚并示范表达方式，而不是让孩子更听话。`;
+}
+
+function modeLabel(mode) {
+  return ({
+    conservative: "不确定，先生成保守版本",
+    picture_text: "能理解图片 + 简短文字",
+    gesture_choice: "主要通过指、点、手势选择",
+    speech_backup: "有口语，但紧张时需要备用表达"
+  })[String(mode || "conservative")] || "不确定，先生成保守版本";
 }
 
 async function callOpenAI(prompt, provider) {
@@ -148,7 +173,7 @@ function safeParseJson(text) {
   }
 }
 
-function normalizeAAC(pkg, provider, original) {
+function normalizeAAC(pkg, provider, original, input = {}) {
   const coreCards = Array.isArray(pkg.core_cards) ? [...pkg.core_cards] : [];
   const scenarioCards = Array.isArray(pkg.scenario_cards) ? [...pkg.scenario_cards] : [];
   const functionCards = Array.isArray(pkg.function_cards) ? [...pkg.function_cards] : [];
@@ -163,6 +188,7 @@ function normalizeAAC(pkg, provider, original) {
     mode: "aac",
     title: pkg.title || "AAC 沟通卡",
     original,
+    communication_mode_label: modeLabel(input.communication_mode),
     core_cards: coreCards.slice(0, 10),
     scenario_cards: scenarioCards.slice(0, 8),
     function_cards: functionCards.slice(0, 8),
@@ -172,13 +198,14 @@ function normalizeAAC(pkg, provider, original) {
   };
 }
 
-function normalizePartner(pkg, provider, original) {
+function normalizePartner(pkg, provider, original, input = {}) {
   const steps = Array.isArray(pkg.rewritten_steps) ? pkg.rewritten_steps : [];
   return {
     provider: provider.name,
     source: provider.source,
     mode: "partner",
     original: pkg.original || original,
+    communication_mode_label: modeLabel(input.communication_mode),
     rewritten_steps: steps.slice(0, 6),
     modeling_script: Array.isArray(pkg.modeling_script) ? pkg.modeling_script.slice(0, 5) : [],
     guidance: Array.isArray(pkg.guidance) ? pkg.guidance.slice(0, 4) : ["一次只说一个步骤。", "用具体动作代替抽象要求。"],
@@ -186,9 +213,10 @@ function normalizePartner(pkg, provider, original) {
   };
 }
 
-function normalize(pkg, provider) {
+function normalize(pkg, provider, input = {}) {
   return {
     provider: provider.name, source: provider.source,
+    communication_mode_label: modeLabel(input.communication_mode),
     title: pkg.title || "AI 生成视觉流程支持",
     summary: pkg.summary || "这是一份供成人和专业人员审阅的视觉流程支持草稿。",
     visual_schedule: Array.isArray(pkg.visual_schedule) ? pkg.visual_schedule.slice(0, 8) : [],
