@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI 自闭症沟通支持工具包 v0.2.1</title>
+  <title>AI 自闭症沟通支持工具包 v0.2.2</title>
   <style>
     :root{
       --paper:#f8f4ec;--card:#fffaf1;--ink:#24302b;--muted:#6b746f;--line:rgba(36,48,43,.14);
@@ -19,7 +19,7 @@
     .section{margin-top:24px;background:rgba(255,250,241,.72);border:1px solid rgba(36,48,43,.10);border-radius:30px;box-shadow:0 18px 60px rgba(53,70,61,.10);overflow:hidden}.tabs{display:grid;grid-template-columns:repeat(3,1fr);background:rgba(36,48,43,.10);gap:1px}.tab{border:0;background:rgba(255,255,255,.58);padding:18px 16px;text-align:left;color:var(--muted)}.tab.active{background:var(--card);color:var(--ink)}.tab strong{display:block;margin-bottom:4px}.tab span{font-size:12px;line-height:1.35}
     .work{display:grid;grid-template-columns:390px 1fr;min-height:640px}.panel{padding:24px;border-right:1px solid rgba(36,48,43,.10);background:rgba(255,255,255,.35)}.out{padding:24px}.helper{color:var(--muted);line-height:1.65;font-size:14px;margin:0 0 18px}label{display:block;font-size:13px;font-weight:750;margin:14px 0 8px}textarea,select,input{width:100%;border:1px solid rgba(36,48,43,.14);border-radius:15px;background:rgba(255,255,255,.78);padding:11px 12px;outline:none}textarea{min-height:112px;line-height:1.55;resize:vertical}.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.preset{border:1px solid rgba(36,48,43,.11);background:rgba(255,255,255,.65);border-radius:14px;padding:10px;text-align:left;font-size:13px}.preset.active,.preset:hover{background:var(--green2);border-color:rgba(53,107,84,.38)}
     .api{border:1px solid rgba(66,106,128,.18);background:linear-gradient(145deg,rgba(229,240,244,.76),rgba(255,255,255,.64));border-radius:20px;padding:15px;margin-bottom:20px}.api-title{display:flex;justify-content:space-between;gap:10px;font-weight:800}.status{display:inline-flex;gap:6px;align-items:center;border-radius:999px;padding:5px 9px;background:rgba(255,255,255,.72);font-size:12px;color:var(--muted)}.dot{width:8px;height:8px;border-radius:999px;background:#b6bcb8}.api.connected .dot{background:#2f8f5b}.api.warning .dot{background:#c9773d}.api.error .dot{background:var(--danger)}.api p,.note{color:var(--muted);font-size:12px;line-height:1.55}.api-actions{display:flex;gap:8px;flex-wrap:wrap}
-    .top-api{margin:-6px 0 22px;border-radius:26px;padding:18px 20px;box-shadow:0 14px 46px rgba(66,106,128,.12)}.api-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:14px}.api-head h2{margin:0 0 6px;font-size:20px;letter-spacing:-.03em}.api-head p{margin:0}.api-row{display:grid;grid-template-columns:1fr 1.35fr 1fr auto;gap:10px;align-items:end}.api-field label{margin:0 0 6px}.api-field input,.api-field select{border-radius:13px;padding:10px 11px;background:rgba(255,255,255,.86)}.api-note{margin-top:10px;color:var(--muted);font-size:12px;line-height:1.55}
+    .top-api{margin:-6px 0 22px;border-radius:26px;padding:18px 20px;box-shadow:0 14px 46px rgba(66,106,128,.12)}.api-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:14px}.api-head h2{margin:0 0 6px;font-size:20px;letter-spacing:-.03em}.api-head p{margin:0}.api-row{display:grid;grid-template-columns:1fr 1.35fr 1fr auto;gap:10px;align-items:end}.api-field label{margin:0 0 6px}.api-field input,.api-field select{border-radius:13px;padding:10px 11px;background:rgba(255,255,255,.86)}.api-note{margin-top:10px;color:var(--muted);font-size:12px;line-height:1.55}.advanced{margin-top:14px;border:1px solid rgba(36,48,43,.12);background:rgba(255,255,255,.48);border-radius:16px;padding:10px 12px}.advanced summary{cursor:pointer;font-weight:750;color:var(--muted);font-size:13px}.advanced select{margin-top:10px}
     .output-head{display:flex;justify-content:space-between;gap:14px;margin-bottom:18px}.canvas{background:#fffdf8;border:1px solid rgba(36,48,43,.10);border-radius:24px;padding:18px;min-height:510px}.schedule{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.step,.card,.box{border:1px solid rgba(36,48,43,.10);background:rgba(255,250,241,.75);border-radius:18px;padding:14px}.icon{font-size:30px}.step h4{margin:8px 0 6px}.step p,.card p,.box li{color:var(--muted);font-size:13px;line-height:1.5}.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}.card{text-align:center}.card .icon{font-size:28px}.box{margin-top:16px}.box h3{margin:0 0 10px}.safe{margin-top:16px;border-radius:18px;background:rgba(157,75,67,.08);border:1px solid rgba(157,75,67,.16);padding:13px;color:#6d3934;font-size:13px;line-height:1.55}.hidden{display:none!important}.toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);opacity:0;background:#25342d;color:white;border-radius:999px;padding:12px 18px;transition:.22s;z-index:20}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
     @media(max-width:980px){.hero,.work{grid-template-columns:1fr}.panel{border-right:0;border-bottom:1px solid rgba(36,48,43,.10)}.tabs,.schedule,.cards{grid-template-columns:1fr 1fr}.api-row{grid-template-columns:1fr 1fr}.api-actions{grid-column:1/-1}}@media(max-width:640px){.shell{width:calc(100vw - 24px)}.hero,.panel,.out{padding:18px}.tabs,.schedule,.cards,.grid2,.api-row{grid-template-columns:1fr}.top-api{padding:16px}.api-head{display:block}.status{margin-top:8px}}
   </style>
@@ -27,7 +27,7 @@
 <body>
   <main class="shell">
     <header class="top">
-      <div class="brand"><div class="logo">绿</div><div><div class="title">AI 自闭症沟通支持工具包</div><div class="sub">Concept Prototype v0.2.1 · 非治疗工具</div></div></div>
+      <div class="brand"><div class="logo">绿</div><div><div class="title">AI 自闭症沟通支持工具包</div><div class="sub">Concept Prototype v0.2.2 · 非治疗工具</div></div></div>
       <div class="badges"><span class="badge">安全优先</span><span class="badge">复刻成熟方法</span><span class="badge">获得专业反馈</span></div>
     </header>
     <section class="api warning top-api" id="api-card">
@@ -73,30 +73,25 @@
     </section>
     <section class="section" id="demo">
       <nav class="tabs">
-        <button class="tab active" data-tab="visual" onclick="switchTab('visual')"><strong>模块一｜视觉支持生成器</strong><span>日程表、步骤图、社交故事</span></button>
+        <button class="tab active" data-tab="visual" onclick="switchTab('visual')"><strong>模块一｜视觉流程支持</strong><span>日程表、First-Then、社交叙事</span></button>
         <button class="tab" data-tab="aac" onclick="switchTab('aac')"><strong>模块二｜表达卡系统</strong><span>核心卡、场景卡、功能表达卡</span></button>
         <button class="tab" data-tab="partner" onclick="switchTab('partner')"><strong>模块三｜沟通伙伴支持</strong><span>语言简化 + 示范使用表达卡</span></button>
       </nav>
       <div class="work">
         <aside class="panel">
           <div id="controls-visual">
-            <h2>视觉支持生成器</h2><p class="helper">输入一个即将发生的场景，生成可视化流程、简单话术和表达卡。</p>
-            <div class="grid2"><button class="preset active" onclick="setVisual('camp',this)">第一次参加夏令营</button><button class="preset" onclick="setVisual('doctor',this)">去医院检查</button><button class="preset" onclick="setVisual('sports',this)">参加体育活动</button><button class="preset" onclick="setVisual('sleep',this)">晚上洗澡睡觉</button></div>
-            <label>场景描述</label><textarea id="visual-input">明天第一次参加夏令营，需要和新老师、新同学一起活动，可能会紧张。</textarea>
-            <label>孩子当前情况</label><select id="visual-child"><option>能理解简单图片和短句</option><option>口语较少，主要靠指物/手势表达</option><option>有口语，但紧张时表达不稳定</option><option>不确定，需要专业老师判断</option></select>
-            <label>支持目标</label><select id="visual-goal"><option>提前解释接下来会发生什么</option><option>支持活动转换</option><option>帮助表达休息、拒绝或没听懂</option></select>
-            <label>场景</label><select id="visual-setting"><option>夏令营</option><option>家庭</option><option>学校</option><option>医院</option><option>户外活动</option></select>
-            <button class="btn full" id="visual-generate-btn" onclick="generateVisualAI()">根据输入生成视觉支持材料</button><button class="btn secondary full" onclick="generateVisual()">查看本地兜底结果</button>
+            <h2>视觉流程支持</h2><p class="helper">直接描述真实场景，生成视觉日程表、First-Then 和社交叙事。</p>
+            <label>真实场景描述</label><textarea id="visual-input">明天第一次参加夏令营，需要和新老师、新同学一起活动，可能会紧张。</textarea>
+            <details class="advanced"><summary>可选：孩子当前情况（后续会进一步影响输出）</summary><select id="visual-child"><option>不确定，需要专业老师判断</option><option>能理解简单图片和短句</option><option>口语较少，主要靠指物/手势表达</option><option>有口语，但紧张时表达不稳定</option></select></details>
+            <button class="btn full" id="visual-generate-btn" onclick="generateVisualAI()">生成视觉流程支持</button>
           </div>
           <div id="controls-aac" class="hidden">
             <h2>表达卡系统</h2><p class="helper">生成核心卡、场景卡和功能表达卡；AI 不推断孩子想法。</p>
-            <div class="grid2"><button class="preset active" onclick="setAAC('transition',this)">活动转换</button><button class="preset" onclick="setAAC('noise',this)">环境太吵</button><button class="preset" onclick="setAAC('refuse',this)">想休息/拒绝</button><button class="preset" onclick="setAAC('unclear',this)">没听懂指令</button></div>
-            <label>场景描述</label><textarea id="aac-input">活动结束后，需要从一个房间换到另一个房间继续活动。</textarea><button class="btn full" onclick="generateAAC()">根据输入生成沟通卡</button>
+            <label>真实场景描述</label><textarea id="aac-input">活动结束后，需要从一个房间换到另一个房间继续活动。</textarea><button class="btn full" onclick="generateAAC()">生成表达卡系统</button>
           </div>
           <div id="controls-partner" class="hidden">
             <h2>沟通伙伴支持</h2><p class="helper">把成人原话拆成低压力短句，并生成示范使用表达卡的脚本。</p>
-            <div class="grid2"><button class="preset active" onclick="setPartner('rush',this)">赶紧收拾</button><button class="preset" onclick="setPartner('rules',this)">活动规则</button><button class="preset" onclick="setPartner('wait',this)">排队等待</button><button class="preset" onclick="setPartner('choice',this)">做选择</button></div>
-            <label>成人原话</label><textarea id="partner-input">你赶紧把东西收拾好，然后去洗手，我们马上要出门了，不然就迟到了。</textarea><button class="btn full" onclick="generatePartner()">改写成低压力表达</button>
+            <label>成人原话 / 沟通场景</label><textarea id="partner-input">你赶紧把东西收拾好，然后去洗手，我们马上要出门了，不然就迟到了。</textarea><button class="btn full" onclick="generatePartner()">生成沟通伙伴支持</button>
           </div>
         </aside>
         <section class="out">
@@ -113,6 +108,7 @@
     const aacPresets={transition:[["❓","我没听懂","表达没有理解下一步。"],["🎒","我要拿东西","需要先处理自己的物品。"],["🧘","我想休息","请求暂停。"],["🔁","请再说一次","请求成人用短句重复。"]],noise:[["🔇","太吵了","表达声音环境不舒服。"],["🤫","我要安静","请求更安静的位置。"],["🚪","我要离开一下","请求短暂离开。"],["🎧","我需要耳机","请求降噪工具。"]],refuse:[["✋","停止","表达不继续当前动作。"],["🧘","我想休息","请求暂停。"],["🙅","我不想继续","表达拒绝继续参与。"],["🤕","我不舒服","需要成人进一步确认。"]],unclear:[["❓","我没听懂","表达没有理解任务。"],["👀","请给我一个例子","请求成人示范。"],["1️⃣","请一步一步说","请求拆分任务。"],["🙋","我需要帮助","请求支持。"]]};
     const partnerPresets={rush:["你赶紧把东西收拾好，然后去洗手，我们马上要出门了，不然就迟到了。",["先收拾书包。","然后去洗手。","最后我们出门。","我会等你两分钟。"]],rules:["等一下你们要遵守规则，不要乱跑，不要抢别人东西，听老师的话，表现好一点。",["第一，站在自己的位置。","第二，轮到你时再开始。","第三，如果想停下，可以说“我想休息”。"]],wait:["你再等等，马上就好了，不要一直问，大家都在排队。",["现在要等5分钟。","你可以看计时器。","等待时可以选择：看卡片、喝水、坐着休息。"]],choice:["你到底想要哪个？你快点选，不选我就帮你选了。",["你可以选A或B。","我给你一点时间。","如果不想选，可以说“我还没想好”。"]]};
     function showToast(t){const el=document.getElementById("toast");el.textContent=t;el.classList.add("show");clearTimeout(window.tt);window.tt=setTimeout(()=>el.classList.remove("show"),2500)}
+    function scrollOutput(){document.querySelector(".out")?.scrollIntoView({behavior:"smooth",block:"start"})}
     function apiConfig(){const provider=document.getElementById("api-provider").value,key=document.getElementById("api-key").value.trim(),model=document.getElementById("api-model").value.trim()||defaultModel(provider);return key?{provider,api_key:key,model}:JSON.parse(localStorage.getItem(storeKey)||"null")}
     function defaultModel(p){return p==="openai"?"gpt-4.1-mini":"deepseek-chat"}function syncApiModel(){const p=document.getElementById("api-provider").value,m=document.getElementById("api-model");if(!m.value.trim())m.value=defaultModel(p)}
     function setApi(type,label,detail){const c=document.getElementById("api-card");c.className="api "+type;document.getElementById("api-status-label").textContent=label;document.getElementById("api-status-detail").textContent=detail}
@@ -134,13 +130,13 @@
     }
     function setVisual(k,b){activate(b);document.getElementById("visual-input").value=visualPresets[k].input;generateVisual(k)}
     function generateVisual(k){const scenario=document.getElementById("visual-input").value.trim();if(k&&visualPresets[k]&&scenario===visualPresets[k].input){const p=visualPresets[k];render({title:p.title.replace("支持包","流程支持"),summary:"本地示例：视觉日程表 + First-Then + 社交叙事。",visual_schedule:p.steps.map((s,i)=>({step:i+1,icon_suggestion:s[0],title:s[1],child_sentence:s[2]})),first_then:{first:p.steps[0]?.[1]||"看流程",then:p.steps[1]?.[1]||"做下一步"},card_suggestions:p.cards.map(c=>c[1]),social_story:["我会去一个可能有点新的场景。","新的事情有时会让我紧张。","我可以先看流程，再一步一步来。"],adult_guidance:["提前展示完整流程。","转场时只展示 First-Then。","表达卡请到模块 2 生成。"]});return}render(localVisualSupport(scenario))}
-    async function generateVisualAI(){const btn=document.getElementById("visual-generate-btn"),old=btn.textContent,scenario=document.getElementById("visual-input").value.trim();if(!scenario)return showToast("先写一个真实场景");if(location.protocol==="file:"){render(localVisualSupport(scenario));showToast("本地预览：已用兜底规则生成，部署后可走 AI");return}btn.textContent="正在生成...";btn.disabled=true;try{const r=await fetch("/api/generate",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({mode:"visual",scenario,communication_context:document.getElementById("visual-child").value,goal:document.getElementById("visual-goal").value,setting:document.getElementById("visual-setting").value,client_api:apiConfig()})});const d=await r.json();if(!r.ok)throw new Error(d.error||"生成失败");render(d);showToast(`已用 ${d.provider||"AI"} 生成`)}catch(e){console.warn(e);showToast("AI 生成失败，先显示本地兜底");render(localVisualSupport(scenario))}finally{btn.textContent=old;btn.disabled=false}}
+    async function generateVisualAI(){const btn=document.getElementById("visual-generate-btn"),old=btn.textContent,scenario=document.getElementById("visual-input").value.trim();if(!scenario)return showToast("先写一个真实场景");if(location.protocol==="file:"){render(localVisualSupport(scenario));showToast("本地预览：已用兜底规则生成，部署后可走 AI");scrollOutput();return}btn.textContent="正在生成...";btn.disabled=true;try{const r=await fetch("/api/generate",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({mode:"visual",scenario,communication_context:document.getElementById("visual-child")?.value||"不确定，需要专业老师判断",goal:"提前解释接下来会发生什么",setting:"由场景描述提供",client_api:apiConfig()})});const d=await r.json();if(!r.ok)throw new Error(d.error||"生成失败");render(d);showToast(`已用 ${d.provider||"AI"} 生成`);scrollOutput()}catch(e){console.warn(e);showToast("AI 生成失败，先显示本地兜底");render(localVisualSupport(scenario));scrollOutput()}finally{btn.textContent=old;btn.disabled=false}}
     function aacPresetInput(k){return {transition:"活动结束后，需要从一个房间换到另一个房间继续活动。",noise:"活动现场声音很大，孩子可能需要表达太吵或想去安静处。",refuse:"孩子可能不想继续当前活动，需要表达停止、休息或不想继续。",unclear:"老师说了一个比较长的任务，孩子可能没有听懂下一步。"}[k]||"活动中孩子需要表达自己的需求、边界或没听懂。"}
     function localAACCards(text){const core=[["🙋","我需要帮助","请求成人提供支持。"],["🧘","我想休息","请求暂停或休息。"],["✋","停止","表达不要继续当前动作。"],["❓","我没听懂","表达没有理解当前要求。"],["🔁","请再说一次","请求成人用短句重复。"],["💬","你理解错了","用于澄清误解。"]];let scene=[["➡️","下一步是什么","请求确认接下来的步骤。"],["⏳","我还没准备好","请求更多处理时间。"]];if(/吵|声音|噪音|安静/.test(text))scene=[["🔇","太吵了","表达声音环境不舒服。"],["🚪","我想去安静的地方","请求换到低刺激环境。"],...scene];if(/换|转场|结束|房间|出门/.test(text))scene=[["🎒","我要先拿东西","表达需要先处理物品。"],["➡️","下一步是什么","请求确认接下来的步骤。"],...scene];if(/篮球|体育|运动|球/.test(text))scene=[["🏀","篮球","当前活动词。"],["💧","喝水","请求喝水或提醒水杯。"],["🔄","轮到我了吗","询问轮次。"],...scene];if(/选择|选|哪个/.test(text))scene=[["A/B","我想选这个","表达自己的选择。"],["⏳","我还没想好","请求更多选择时间。"],...scene];const func=[["🚫","我不想继续","表达拒绝继续。"],["👀","请给我看一次","请求示范。"],["✅","完成了","表达任务完成。"],["🤔","我还没想好","表达需要更多时间。"]];return {core_cards:core.slice(0,6),scenario_cards:scene.slice(0,6),function_cards:func.slice(0,6)}}
     function renderCardSection(title,cards){return `<div class="box"><h3>${esc(title)}</h3><div class="cards">${cards.map(c=>`<article class="card"><div class="icon">${esc(c.icon_suggestion||c[0]||"💬")}</div><strong>${esc(c.label||c[1]||"表达卡")}</strong><p>${esc(c.purpose||c[2]||"帮助表达需求或澄清。")}</p></article>`).join("")}</div></div>`}
     function renderAACOutput(pkg,sourceLabel="本地规则"){const flat=Array.isArray(pkg)?pkg:pkg.communication_cards;const core=Array.isArray(pkg)?flat.slice(0,4):(pkg.core_cards||[]);const scene=Array.isArray(pkg)?flat.slice(4,8):(pkg.scenario_cards||[]);const func=Array.isArray(pkg)?flat.slice(8):(pkg.function_cards||[]);document.getElementById("output-title").textContent="表达卡系统｜核心卡 + 场景卡 + 功能卡";document.getElementById("output-subtitle").textContent=`根据当前输入生成可选择表达。来源：${sourceLabel}`;document.getElementById("output").innerHTML=`${renderCardSection("固定核心卡｜跨场景都保留",core)}${renderCardSection("当前场景卡｜这次活动需要",scene)}${renderCardSection("功能表达卡｜请求、拒绝、澄清、选择",func)}<div class="safe">这些卡片只是表达选项，不代表孩子一定有这些想法。实际使用前应由康复老师/负责人确认。</div>`;currentSummary=`AAC 表达系统：核心卡 ${core.length} 张，场景卡 ${scene.length} 张，功能卡 ${func.length} 张。`}
     function setAAC(k,b){activate(b);document.getElementById("aac-input").value=aacPresetInput(k);generateAAC(k)}
-    async function generateAAC(k="transition"){const text=document.getElementById("aac-input").value.trim()||aacPresetInput(k);if(location.protocol!=="file:"){try{const r=await fetch("/api/generate",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({mode:"aac",text,client_api:apiConfig()})});const d=await r.json();if(r.ok&&(Array.isArray(d.communication_cards)||Array.isArray(d.core_cards))){renderAACOutput(d,`${d.provider||"AI"}`);return}}catch(e){console.warn("AAC API failed, using local fallback",e)}}renderAACOutput(localAACCards(text),"本地规则")}
+    async function generateAAC(k="transition"){const text=document.getElementById("aac-input").value.trim()||aacPresetInput(k);if(location.protocol!=="file:"){try{const r=await fetch("/api/generate",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({mode:"aac",text,client_api:apiConfig()})});const d=await r.json();if(r.ok&&(Array.isArray(d.communication_cards)||Array.isArray(d.core_cards))){renderAACOutput(d,`${d.provider||"AI"}`);scrollOutput();return}}catch(e){console.warn("AAC API failed, using local fallback",e)}}renderAACOutput(localAACCards(text),"本地规则");scrollOutput()}
     function setPartner(k,b){activate(b);document.getElementById("partner-input").value=partnerPresets[k][0];generatePartner(k)}
     function esc(v){return String(v??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#39;")}
     function localPartnerRewrite(text){
@@ -173,12 +169,14 @@
           const d=await r.json();
           if(r.ok&&Array.isArray(d.rewritten_steps)&&d.rewritten_steps.length){
             renderPartnerOutput(input,d.rewritten_steps,d.guidance||[],`${d.provider||"AI"}`,d.modeling_script||d.aided_language_modeling||[]);
+            scrollOutput();
             return;
           }
         }catch(e){console.warn("Partner API failed, using local fallback",e)}
       }
       const local=localPartnerRewrite(input);
       renderPartnerOutput(input,local.steps,local.guidance,"本地规则",local.modeling);
+      scrollOutput();
     }
     function copySummary(){navigator.clipboard?.writeText(currentSummary);showToast("已复制摘要")}
     function installButtonHandlers(){
