@@ -21,6 +21,10 @@ export async function onRequestPost(context) {
     if (!scenario) return json({ error: "Missing input text." }, 400);
     const provider = chooseProvider(context.env, input.client_api, context.request.headers);
     if (!provider) return json({ error: "AI API is not configured." }, 501);
+    if (mode === "aac") {
+      const raw = provider.name === "openai" ? await callOpenAI(buildAACPrompt(input), provider) : await callDeepSeek(buildAACPrompt(input), provider);
+      return json(normalizeAAC(safeParseJson(raw), provider, scenario));
+    }
     if (mode === "partner") {
       const raw = provider.name === "openai" ? await callOpenAI(buildPartnerPrompt(input), provider) : await callDeepSeek(buildPartnerPrompt(input), provider);
       return json(normalizePartner(safeParseJson(raw), provider, scenario));
@@ -65,6 +69,25 @@ function buildPrompt(input) {
   "safety_note": "安全提醒"
 }
 规则：5-8个步骤；必须包含这些沟通卡：${REQUIRED_CARDS.join("、")}；不要诊断、不要解释行为原因、不要推断隐藏意图。`;
+}
+
+function buildAACPrompt(input) {
+  return `请根据以下真实场景生成中文 AAC / 图片沟通卡候选。
+场景：${input.text || input.scenario || input.original_text}
+
+必须返回 JSON：
+{
+  "title": "短标题",
+  "communication_cards": [{"label":"卡片文字","purpose":"用途","icon_suggestion":"emoji"}],
+  "adult_guidance": ["2到4条成人使用提示"],
+  "safety_note": "安全提醒"
+}
+规则：
+- 生成 6 到 10 张表达卡。
+- 必须包含：我需要帮助、我需要休息、我没听懂、请再说一次、停止、不要、太吵了、你理解错了。
+- 卡片是表达选项，不代表孩子一定有这些想法。
+- 不要诊断，不要解释行为原因，不要推断隐藏意图，不要做治疗建议。
+- 重点支持孩子表达需求、边界、拒绝、澄清和请求重复。`;
 }
 
 function buildPartnerPrompt(input) {
@@ -114,6 +137,24 @@ function safeParseJson(text) {
     if (!match) throw new Error("Model output was not JSON.");
     return JSON.parse(match[0]);
   }
+}
+
+function normalizeAAC(pkg, provider, original) {
+  const cards = Array.isArray(pkg.communication_cards) ? [...pkg.communication_cards] : [];
+  const labels = new Set(cards.map(c => String(c.label || "")));
+  for (const label of REQUIRED_CARDS) {
+    if (!labels.has(label)) cards.push({ label, purpose: "帮助孩子表达需求、边界或澄清误解", icon_suggestion: icon(label) });
+  }
+  return {
+    provider: provider.name,
+    source: provider.source,
+    mode: "aac",
+    title: pkg.title || "AAC 沟通卡",
+    original,
+    communication_cards: cards.slice(0, 12),
+    adult_guidance: Array.isArray(pkg.adult_guidance) ? pkg.adult_guidance.slice(0, 4) : ["把卡片放在孩子能看到、能选择的位置。", "接受指、点、拿卡片、文字、手势等多种表达方式。"],
+    safety_note: pkg.safety_note || "这些卡片只是表达选项，不代表孩子一定有这些想法；使用前需要成人和专业人员确认。"
+  };
 }
 
 function normalizePartner(pkg, provider, original) {
